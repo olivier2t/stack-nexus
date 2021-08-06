@@ -1,7 +1,7 @@
 resource "aws_security_group" "nexus" {
   name        = "nexus"
   description = "Allow accessing the Nexus Repository service from the internet."
-  vpc_id      = module.infra_vpc.vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 80
