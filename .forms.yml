@@ -106,9 +106,3 @@ infra-aws:
         values:
             - 10
             - 250
-      - name: "EBS optimized"
-        description: "Whether the Nexus Repository Instance is EBS optimized or not, related to the instance type you choose."
-        key: ebs_optimized
-        widget: switch
-        type: boolean
-        default: false

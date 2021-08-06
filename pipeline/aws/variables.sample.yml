@@ -96,10 +96,6 @@ instance_type: t3.micro
 #+ Disk size for the Nexus Repository (Go).
 disk_size: 20
 
-#. ebs_optimized (required): false
-#+ Whether the Nexus Repository Instance is EBS optimized or not, related to the instance type you choose.
-ebs_optimized: false
-
 
 #
 # Default variables that shouldn't be changed except if needed

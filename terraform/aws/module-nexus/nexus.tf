@@ -46,6 +46,11 @@ resource "aws_instance" "nexus" {
   subnet_id               = var.public_subnets[0]
   disable_api_termination = false
 
+  root_block_device {
+    volume_size           = var.disk_size
+    delete_on_termination = true
+  }
+
   tags = merge(local.merged_tags, {
     Name       = "${var.customer}-nexus"
     role       = "nexus"

@@ -86,7 +86,6 @@ resources:
         keypair_public: ((keypair_public))
         instance_type: ((instance_type))
         disk_size: ((disk_size))
-        ebs_optimized: ((ebs_optimized))
         env: ((env))
         project: ((project))
         customer: ((customer))

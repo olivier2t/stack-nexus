@@ -15,4 +15,3 @@ variable "keypair_public" {}
 #
 variable "instance_type" {}
 variable "disk_size" {}
-variable "ebs_optimized" {}

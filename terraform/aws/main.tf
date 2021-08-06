@@ -37,11 +37,7 @@ module "nexus" {
   #+ Disk size for the Nexus Repository (Go)
   disk_size = var.disk_size
 
-  #. ebs_optimized: false
-  #+ Whether the Nexus Repository Instance is EBS optimized or not, related to the instance type you choose.
-  ebs_optimized = var.ebs_optimized
-
   # . keypair_public: ((custom_keypair.ssh_pub))
   # + The public SSH key to provision to bastion for external access through SSH
-  keypair_public = data.terraform_remote_state.infra.outputs.keypair_public
+  keypair_public = var.keypair_public
 }
