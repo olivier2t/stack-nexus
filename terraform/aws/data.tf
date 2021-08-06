@@ -2,7 +2,7 @@
 data "terraform_remote_state" "infra" {
   backend = "s3"
 
-  config {
+  config = {
     bucket = var.terraform_storage_bucket_name
     key    = "infra/${env}/infra.tfstate"
     region = var.aws_region

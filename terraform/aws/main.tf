@@ -18,11 +18,11 @@ module "nexus" {
 
   #. vpc_id: ''
   #+ Amazon VPC ID where the Nexus Repository will be created
-  vpc_id = data.terraform_remote_state.infra.vpc_id
+  vpc_id = data.terraform_remote_state.infra.outputs.vpc_id
 
   #. public_subnets: []
   #+ The public subnets for the VPC
-  public_subnets = data.terraform_remote_state.infra.public_subnets
+  public_subnets = data.terraform_remote_state.infra.outputs.public_subnets
 
 
   #
@@ -43,5 +43,5 @@ module "nexus" {
 
   # . keypair_public: ((custom_keypair.ssh_pub))
   # + The public SSH key to provision to bastion for external access through SSH
-  keypair_public = data.terraform_remote_state.infra.keypair_public
+  keypair_public = data.terraform_remote_state.infra.outputs.keypair_public
 }
