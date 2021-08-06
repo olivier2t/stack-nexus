@@ -4,7 +4,7 @@ data "terraform_remote_state" "infra" {
 
   config = {
     bucket = var.terraform_storage_bucket_name
-    key    = "infra/${env}/infra.tfstate"
+    key    = "infra/${var.env}/infra.tfstate"
     region = var.aws_region
   }
 }
