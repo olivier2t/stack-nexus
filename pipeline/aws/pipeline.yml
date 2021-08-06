@@ -44,25 +44,25 @@ resources:
         - ((config_terraform_path))/*
 
   # The Ansible stack (will be merged with the config)
-  - name: git_stack-ansible
-    type: git
-    icon: git
-    source:
-      uri: ((stack_git_repository))
-      branch: ((stack_git_branch))
-      paths:
-        - ((stack_ansible_path))/*
+  # - name: git_stack-ansible
+  #   type: git
+  #   icon: git
+  #   source:
+  #     uri: ((stack_git_repository))
+  #     branch: ((stack_git_branch))
+  #     paths:
+  #       - ((stack_ansible_path))/*
 
   # The Ansible config (will be merged with the stack)
-  - name: git_config-ansible
-    type: git
-    icon: git
-    source:
-      uri: ((config_git_repository))
-      branch: ((config_git_branch))
-      private_key: ((config_git_private_key))
-      paths:
-        - ((config_ansible_path))/*
+  # - name: git_config-ansible
+  #   type: git
+  #   icon: git
+  #   source:
+  #     uri: ((config_git_repository))
+  #     branch: ((config_git_branch))
+  #     private_key: ((config_git_private_key))
+  #     paths:
+  #       - ((config_ansible_path))/*
 
   - name: tfstate
     type: terraform
