@@ -221,8 +221,8 @@ jobs:
             args:
               - '-ec'
               - |
-              export SSH_JUMP_URL="$(cat tfstate/metadata | jq -r .bastion_user)@$(cat tfstate/metadata | jq -r .bastion_ip)"
-              /usr/bin/ansible-runner
+                export SSH_JUMP_URL="$(cat tfstate/metadata | jq -r .bastion_user)@$(cat tfstate/metadata | jq -r .bastion_ip)"
+                /usr/bin/ansible-runner
           caches:
             - path: ansible-playbook/roles
           inputs:
