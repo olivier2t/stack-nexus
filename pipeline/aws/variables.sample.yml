@@ -28,11 +28,6 @@ keypair_public: ((custom_keypair.ssh_pub))
 #+ The private SSH key allowing ansible to run playbooks in the Nexus Repository instance via bastion
 keypair_private: ((custom_keypair.ssh_prv))
 
-#. bastion_url (required): ""
-# TO DELETE
-#+ The bastion URL allowing to jump to the Nexus Repository instance in the private VPC
-# bastion_url: ''
-
 
 #
 # Stack Configuration
@@ -76,15 +71,6 @@ stack_ansible_path: ansible/environments
 
 
 #
-# VPC TO DELETE
-#
-
-#. vpc_id (required): ''
-#+ Amazon VPC ID where the Nexus Repository will be created.
-# vpc_id: ''
-
-
-#
 # Nexus
 #
 
@@ -120,21 +106,3 @@ terraform_version: '0.15.2'
 #. cycloid-toolkit ansible version (required): 'v2.7'
 #+ cycloid-toolkit docker image tag to use (https://hub.docker.com/r/cycloid/cycloid-toolkit/tags).
 ansible_version: 'v2.7'
-
-#. ansible_params (required): dict
-#+ Parameters of ansible-runner script. Can be found here: https://github.com/cycloidio/docker-cycloid-toolkit#ansible-runner
-ansible_params:
-  SSH_JUMP_URL: ((bastion_url))
-  SSH_PRIVATE_KEYS:
-    - ((keypair_private))
-  # ANSIBLE_PLAYBOOK_PATH should be "ansible-playbook/" + (git_ansible_path)
-  ANSIBLE_PLAYBOOK_PATH: ansible-playbook/
-  ANSIBLE_PLAYBOOK_NAME: main.yml
-  EXTRA_ANSIBLE_VARS:
-    customer: ($ organization_canonical $)
-    project: ($ project $)
-    env: ($ environment $)
-# If you are using Amazon EC2 dynamic inventory
-  #AWS_DEFAULT_REGION: eu-west-1
-  #AWS_ACCESS_KEY_ID: ((aws.access_key))
-  #AWS_SECRET_ACCESS_KEY: ((aws.secret_key))

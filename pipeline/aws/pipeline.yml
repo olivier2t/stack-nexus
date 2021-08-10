@@ -11,8 +11,9 @@ shared:
     run:
       path: /usr/bin/merge-stack-and-config
     outputs:
-      - name: merged-stack
-        path: "merged-stack"
+    - name: merged-stack
+      path: "merged-stack"
+
 
 resource_types:
   - name: terraform
@@ -44,26 +45,26 @@ resources:
       paths:
         - ((config_terraform_path))/*
 
-  # The Ansible stack (will be merged with the config)
-  # - name: git_stack-ansible
-  #   type: git
-  #   icon: git
-  #   source:
-  #     uri: ((stack_git_repository))
-  #     branch: ((stack_git_branch))
-  #     paths:
-  #       - ((stack_ansible_path))/*
+  The Ansible stack (will be merged with the config)
+  - name: git_stack-ansible
+    type: git
+    icon: git
+    source:
+      uri: ((stack_git_repository))
+      branch: ((stack_git_branch))
+      paths:
+        - ((stack_ansible_path))/*
 
-  # The Ansible config (will be merged with the stack)
-  # - name: git_config-ansible
-  #   type: git
-  #   icon: git
-  #   source:
-  #     uri: ((config_git_repository))
-  #     branch: ((config_git_branch))
-  #     private_key: ((config_git_private_key))
-  #     paths:
-  #       - ((config_ansible_path))/*
+  The Ansible config (will be merged with the stack)
+  - name: git_config-ansible
+    type: git
+    icon: git
+    source:
+      uri: ((config_git_repository))
+      branch: ((config_git_branch))
+      private_key: ((config_git_private_key))
+      paths:
+        - ((config_ansible_path))/*
 
   - name: tfstate
     type: terraform
@@ -99,6 +100,7 @@ groups:
     jobs:
       - terraform-plan
       - terraform-apply
+      - deploy-nexus
       
   - name: destroy
     jobs:
@@ -174,6 +176,70 @@ jobs:
           plan_run: true
           terraform_source: merged-stack/
 
+  - name: deploy-nexus
+    serial: true
+    build_logs_to_retain: 10
+    plan:
+      - in_parallel:
+        - get: git_stack-ansible
+          params: {depth: 1}
+          trigger: false
+
+        - get: git_config-ansible
+          params: {depth: 1}
+          trigger: false
+
+        - get: tfstate
+          trigger: true
+          passed:
+            - terraform-apply
+
+      - task: merge-stack-and-config
+        config:
+          <<: *merge-stack-and-config
+          inputs:
+          - name: git_config-ansible
+            path: "config"
+          - name: git_stack-ansible
+            path: "stack"
+          - name: tfstate
+            path: "terraform"
+        params:
+          CONFIG_PATH: ((config_ansible_path))
+          STACK_PATH: ((stack_ansible_path))
+
+      - task: run-ansible
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: ((ansible_version))
+          run:
+            path: /bin/bash
+            args:
+              - '-ec'
+              - |
+              export SSH_JUMP_URL="$(cat tfstate/metadata | jq -r .bastion_user)@$(cat tfstate/metadata | jq -r .bastion_ip)"
+              /usr/bin/ansible-runner
+          caches:
+            - path: ansible-playbook/roles
+          inputs:
+          - name: merged-stack
+            path: ansible-playbook
+          - name: tfstate
+
+        params:
+          #+ Parameters of ansible-runner script. Can be found here: https://github.com/cycloidio/docker-cycloid-toolkit#ansible-runner
+          SSH_PRIVATE_KEY: ((keypair_private))
+          ANSIBLE_PLAYBOOK_PATH: ansible-playbook/
+          ANSIBLE_PLAYBOOK_NAME: site.yml
+          EXTRA_ANSIBLE_VARS:
+            env: (env)
+            project: (project)
+            customer: (customer)
+
   - name: terraform-destroy
     serial: true
     max_in_flight: 1
@@ -204,50 +270,3 @@ jobs:
           terraform_source: merged-stack/
         get_params:
           action: destroy
-
-  # - name: deploy-nexus
-  #   serial: true
-  #   build_logs_to_retain: 10
-  #   plan:
-  #     - in_parallel:
-  #       - get: git_stack-ansible
-  #         params: {depth: 1}
-  #         trigger: false
-
-  #       - get: git_config-ansible
-  #         params: {depth: 1}
-  #         trigger: false
-
-  #       - get: tfstate
-  #         trigger: true
-  #         passed:
-  #           - terraform-apply
-
-  #     - task: merge-stack-and-config
-  #       config:
-  #         <<: *merge-stack-and-config
-  #         inputs:
-  #         - name: git_config-ansible
-  #           path: "config"
-  #         - name: git_stack-ansible
-  #           path: "stack"
-  #       params:
-  #         CONFIG_PATH: ((config_ansible_path))
-  #         STACK_PATH: ((stack_ansible_path))
-
-  #     - task: run-ansible
-  #       config:
-  #         platform: linux
-  #         image_resource:
-  #           type: docker-image
-  #           source:
-  #             repository: cycloid/cycloid-toolkit
-  #             tag: ((ansible_version))
-  #         run:
-  #           path: /usr/bin/ansible-runner
-  #         caches:
-  #           - path: ansible-playbook/roles
-  #         inputs:
-  #           - name: merged-stack
-  #             path: ansible-playbook
-  #       params: ((ansible_params))
