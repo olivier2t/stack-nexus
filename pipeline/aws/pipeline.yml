@@ -45,7 +45,7 @@ resources:
       paths:
         - ((config_terraform_path))/*
 
-  The Ansible stack (will be merged with the config)
+  # The Ansible stack (will be merged with the config)
   - name: git_stack-ansible
     type: git
     icon: git
@@ -55,7 +55,7 @@ resources:
       paths:
         - ((stack_ansible_path))/*
 
-  The Ansible config (will be merged with the stack)
+  # The Ansible config (will be merged with the stack)
   - name: git_config-ansible
     type: git
     icon: git
